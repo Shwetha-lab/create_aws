@@ -2,28 +2,18 @@ provider "aws" {
   region = "us-east-1"
 }
 
-resource "aws_vpc" "custom-vpc" {
+
+
+
+resource "aws_vpc" "New-vpc" {
   cidr_block       = "10.0.0.0/18"
   instance_tenancy = "default"
-
   tags = {
-    Name = "custom-vpc"
-  
+    Name = "New-vpc"  
   }
 }
-
-
-resource "aws_internet_gateway" "igw" {
-  vpc_id = aws_vpc.custom-vpc.id
-
-  tags = {
-    Name = "Main IGW"
-  }
-}
-
-
 resource "aws_subnet" "public" {
-  vpc_id     = aws_vpc.custom-vpc.id
+  vpc_id     = aws_vpc.New-vpc.id
   cidr_block = "10.0.0.0/24"
 
   tags = {
@@ -33,7 +23,7 @@ resource "aws_subnet" "public" {
 
 
 resource "aws_subnet" "private" {
-  vpc_id     = aws_vpc.custom-vpc.id
+  vpc_id     = aws_vpc.New-vpc.id
   cidr_block = "10.0.1.0/24"
 
   tags = {
@@ -43,7 +33,7 @@ resource "aws_subnet" "private" {
 
 
 resource "aws_route_table" "public" {
-  vpc_id = aws_vpc.custom-vpc.id
+  vpc_id = aws_vpc.New-vpc.id
 
   route {
     cidr_block = "0.0.0.0/0"
@@ -72,7 +62,7 @@ resource "aws_nat_gateway" "nat" {
 }
 
 resource "aws_route_table" "private" {
-  vpc_id = aws_vpc.custom-vpc.id
+  vpc_id = aws_vpc.New-vpc.id
 
   route {
     cidr_block = "0.0.0.0/0"
@@ -94,18 +84,25 @@ resource "aws_route_table_association" "private" {
   route_table_id = aws_route_table.private.id
 }
 
+resource "aws_internet_gateway" "igw" {
+  vpc_id = aws_vpc.New-vpc.id
+
+  tags = {
+    Name = "Main IGW"
+  }
+}
 
 resource "aws_security_group" "allow_tls" {
   name        = "allow_tls"
   description = "Allow TLS inbound traffic"
-  vpc_id      = aws_vpc.custom-vpc.id
+  vpc_id      = aws_vpc.New-vpc.id
 
   ingress {
     description = "TLS from VPC"
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
-    cidr_blocks = [aws_vpc.custom-vpc.cidr_block]
+    cidr_blocks = [aws_vpc.New-vpc.cidr_block]
   }
 
   egress {
