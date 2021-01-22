@@ -2,9 +2,6 @@ provider "aws" {
   region = "us-east-1"
 }
 
-
-
-
 resource "aws_vpc" "New-vpc" {
   cidr_block       = "10.0.0.0/18"
   instance_tenancy = "default"
@@ -99,12 +96,19 @@ resource "aws_security_group" "allow_tls" {
 
   ingress {
     description = "TLS from VPC"
-    from_port   = 443
-    to_port     = 443
+    from_port   = 22
+    to_port     = 22
     protocol    = "tcp"
     cidr_blocks = [aws_vpc.New-vpc.cidr_block]
   }
 
+ ingress {
+    description = "TLS from VPC"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = [aws_vpc.New-vpc.cidr_block]
+  }
   egress {
     from_port   = 0
     to_port     = 0
@@ -115,7 +119,6 @@ resource "aws_security_group" "allow_tls" {
   tags = {
     Name = "allow_tls"
   }
+
 }
-
-
 
