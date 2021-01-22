@@ -6,26 +6,26 @@ resource "aws_instance" "ec2_exmple" {
   associate_public_ip_address = "true"
   key_name = "mykey"
   
-tags = {
-  Name = "ec2_exmple"
-}
-
-  
-provisioner "file" {
-  source      = "/user/ramja/terraform"
-  destination = "/home/ec2-user"
+  tags = {
+    Name = "ec2_exmple"
+  }
 
   connection {
     type            = "ssh"
     host            = self.public_ip
-    private_key     = "/user/ramja/terraform/mykey.pem"
+    private_key     = "${file("user/ramja/terraform/mykey.pem")}"
     user            = "ec2-user"
   }
-   provisioner "remote-exec" {
+  provisioner "file" {
+    source      = "/user/ramja/terraform"
+    destination = "/home/ec2-user"
+    }
+      
+  provisioner "remote-exec" {
     inline = [
       "chmod +x /tmp/script.sh",
       "/tmp/script.sh args",
     ]
   }
 }
-}
+
