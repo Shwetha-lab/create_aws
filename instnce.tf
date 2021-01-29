@@ -9,23 +9,4 @@ resource "aws_instance" "ec2_exmple" {
 tags = {
   Name = "ec2_exmple"
 }
-
-  
-provisioner "file" {
-  source      = "/user/ramja/terraform"
-  destination = "/home/ec2-user"
-
-  connection {
-    type            = "ssh"
-    host            = self.public_ip
-    private_key     = "/user/ramja/terraform/mykey.pem"
-    user            = "ec2-user"
-  }
-   provisioner "remote-exec" {
-    inline = [
-      "chmod +x /tmp/script.sh",
-      "/tmp/script.sh args",
-    ]
-  }
-}
 }
